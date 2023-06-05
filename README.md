@@ -1,7 +1,15 @@
-# Vue 3 + Vite
+# Configuring Environment
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+If not already installed, install yarn via npm: `npm install --global yarn`
 
-## Recommended IDE Setup
+# Configure Application
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+Create a `.env` file at the base of the repo. Supply it with `VITE_AQI_API_TOKEN=123`, but with the value replaced with your AQI API token.
+
+# Running Application
+
+Run: `AQI_API_TOKEN=123 yarn run dev` but with the AQI_API_TOKEN value replaced with your AQI API token.
+
+# Running Tests
+
+Run: `AQI_API_TOKEN=123 yarn test` but with the AQI_API_TOKEN value replaced with your AQI API token.

@@ -7,7 +7,7 @@
         <li>AQI: {{ aqi }}</li>
         <li>Categorization: {{ aqi_categorization }}</li>
         <li>City: {{ determined_city }}</li>
-        <li>Time of Data: {{ data_creation_date }}</li>
+        <li>Time Pulled: {{ data_creation_date }}</li>
       </ul>
     </div>
     <br>
@@ -18,6 +18,7 @@
 <script>
   import { ref } from 'vue'
   import Navbar from './Nav.vue'
+  import { determineAqiCategorizationDetails } from '../helpers/LocationDetails'
 
   export default {
     components: {
@@ -45,8 +46,8 @@
       }
     },
     methods: {
-      async getDetails() {
-        let response = await fetch("https://api.waqi.info/feed/"+this.determined_city+"/?token=" + import.meta.env.VITE_AQI_API_TOKEN, {
+      async fetchDetails() {
+        let response = await fetch("https://api.waqi.info/feed/" + this.determined_city + "/?token=" + import.meta.env.VITE_AQI_API_TOKEN, {
           method: "GET",
         });
 
@@ -59,49 +60,41 @@
 
         stored_details = JSON.parse(stored_details);
         let details = stored_details[this.determined_city];
+        let new_data = false;
 
         if (cache_bust || !details) {
-          details = await this.getDetails();
+          details = await this.fetchDetails();
+          new_data = true;
         }
 
-        this.aqi = details.aqi;
-        this.determineAqiCategorizationDetails();
-        this.data_creation_date = details.data_creation_date || new Date().toLocaleString();
+        details = this.formatDisplayInfo(details)
 
-        details.data_creation_date = this.data_creation_date;
-        stored_details[this.determined_city] = details;
-        stored_details = JSON.stringify(stored_details);
-        localStorage.setItem("aqi_details", stored_details)
+        if (new_data) {
+          this.cacheContent(stored_details, details)
+        }
+      },
+      formatDisplayInfo(info) {
+        this.aqi = info.aqi;
+
+        const categorization_details = determineAqiCategorizationDetails(this.aqi);
+        this.aqi_categorization = categorization_details.aqi_categorization;
+        this.aqi_color = categorization_details.aqi_color;
+
+        this.data_creation_date = info.data_creation_date || new Date().toLocaleString();
+        info.data_creation_date = this.data_creation_date;
 
         this.$forceUpdate();
+
+        return info;
       },
-      determineAqiCategorizationDetails() {
-        const aqi = this.aqi;
-        if (aqi < 51) {
-          this.aqi_categorization = "Good";
-          this.aqi_color = "Green";
-        } else if (aqi < 101) {
-          this.aqi_categorization = "Moderate";
-          this.aqi_color = "Yellow";
-        } else if (aqi < 151) {
-          this.aqi_categorization = "Unhealthy for Sensitive Groups";
-          this.aqi_color = "Orange";
-        } else if (aqi < 201) {
-          this.aqi_categorization = "Unhealthy";
-          this.aqi_color = "Red";
-        } else if (aqi < 301) {
-          this.aqi_categorization = "Very Unhealthy";
-          this.aqi_color = "Purple";
-        } else if (aqi >= 301) {
-          this.aqi_categorization = "Hazordous";
-          this.aqi_color = "Maroon";
-        } else {
-          this.aqi_categorization = "Unknown";
-          this.aqi_color = "Grey";
-        }
+      cacheContent(existing_cache, new_content) {
+        existing_cache[this.determined_city] = new_content;
+
+        existing_cache = JSON.stringify(existing_cache);
+        localStorage.setItem("aqi_details", existing_cache)
       },
-      // Determines a users city by IP address
-      async getUserCity() {
+      // Determines a user's city by IP address
+      async fetchUserCity() {
         let response = await fetch("https://ipapi.co/json/", {
           method: "GET",
         });
@@ -113,7 +106,7 @@
     },
     async created() {
       if (this.city === "ip-location") {
-        this.determined_city = await this.getUserCity();
+        this.determined_city = await this.fetchUserCity();
       } else {
         this.determined_city = this.city;
       }
