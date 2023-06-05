@@ -1,13 +1,15 @@
 <script>
   export default {
     beforeMount() {
+      // Initialize or clear aqi_details
       localStorage.setItem("aqi_details", JSON.stringify({}));
+
+      this.$router.push("/location/ip-location");
     }
   }
 </script>
 
 <template>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <router-view :key="$route.fullPath"></router-view>
 </template>
 

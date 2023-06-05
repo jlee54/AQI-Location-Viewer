@@ -66,8 +66,9 @@
 
         this.aqi = details.aqi;
         this.determineAqiCategorizationDetails();
-        this.data_creation_date = new Date().toLocaleString();
+        this.data_creation_date = details.data_creation_date || new Date().toLocaleString();
 
+        details.data_creation_date = this.data_creation_date;
         stored_details[this.determined_city] = details;
         stored_details = JSON.stringify(stored_details);
         localStorage.setItem("aqi_details", stored_details)
@@ -124,6 +125,13 @@
 
 
 <style scoped lang="scss">
+
+  #content {
+    h1 {
+      font-size: 3rem;
+    }
+  }
+
   #aqiDetails {
     width: 20rem;
     padding: 1rem;

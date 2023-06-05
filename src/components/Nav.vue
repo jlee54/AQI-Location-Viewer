@@ -20,10 +20,9 @@
   #nav {
     display: flex;
     flex-direction: column;
-    background-color: rgb(17, 24, 39);
-    height: 100%;
 
     * {
+      background-color: rgb(17, 24, 39);
       color: white;
       border-bottom: 1px solid white;
       text-align: center;

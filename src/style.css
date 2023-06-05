@@ -45,12 +45,18 @@ button {
 
 #app {
   display: flex;
+  justify-content: center;
   width: 100%;
 }
 
+aside {
+  min-width: 15%;
+  margin-top: 1rem;
+}
+
 #content {
-  width: 100%;
-  padding: 1rem 5rem;
+  max-width: 30%;
+  margin: 1rem 5rem;
 }
 
 @media (prefers-color-scheme: light) {
